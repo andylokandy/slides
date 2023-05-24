@@ -1322,7 +1322,6 @@ get([1, 2, 3], 0)
 
 ```rust
 get(Array<Int8>, Int8)
-
 ```
 
 <hr/>
