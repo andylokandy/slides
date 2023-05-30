@@ -953,7 +953,7 @@ flowchart LR
 ## Pratt Parser
 
 https://github.com/segeljakt/pratt/
-A decent solution to the problem of **Left Recursioin**
+A decent solution to the problem of **Left Recursion**
 
 </div>
 <div>
@@ -975,7 +975,7 @@ Instead of parsing to a tree, parse the flatten elements
 ## Pratt Parser
 
 https://github.com/segeljakt/pratt/
-A decent solution to the problem of **Left Recursioin**
+A decent solution to the problem of **Left Recursion**
 
 </div>
 <div>
@@ -1330,7 +1330,7 @@ get(Array<Int8>, Int8)
 
 ```rust
 {T=Int8}
-// then apply the substitution to the signature
+// apply the substitution
 get<Int8>(Array<Int8>, Int64) -> Int8
 ```
 
@@ -1582,7 +1582,6 @@ As a result, it's easy to register overload for any **vectorized** input
 
 ```rust
 registry.register_2_arg_int8("plus", |lhs: i8, rhs: i8| lhs + rhs);
-registry.register_2_arg_int8("minus", |lhs: i8, rhs: i8| lhs - rhs);
 ```
 
 <hr/>
@@ -1591,11 +1590,8 @@ But still many **duplicated types** to register
 
 ```rust
 registry.register_2_arg_int16("plus", |lhs: i16, rhs: i16| lhs + rhs);
-registry.register_2_arg_int16("minus", |lhs: i16, rhs: i16| lhs - rhs);
 registry.register_2_arg_int32("plus", |lhs: i32, rhs: i32| lhs + rhs);
-registry.register_2_arg_int32("minus", |lhs: i32, rhs: i32| lhs - rhs);
 registry.register_2_arg_int64("plus", |lhs: i64, rhs: i64| lhs + rhs);
-registry.register_2_arg_int64("minus", |lhs: i64, rhs: i64| lhs - rhs);
 ```
 
 </div>
@@ -1718,10 +1714,185 @@ As a result, its easy to register overload for input of **any data type**
 registry.register_2_arg::<Int8Type, Int8Type, Int8Type>(
     "plus", |lhs: i8, rhs: i8| lhs + rhs
 );
-registry.register_2_arg::<Int8Type, Int8Type, Int8Type>(
-    "minus", |lhs: i8, rhs: i8| lhs - rhs
+```
+
+<hr/>
+
+Three lines of code to register **any** overload
+
+```rust
+registry.register_1_arg::<Int64Type, Int64Type>(
+    "abs", |val: i64| val.abs()
 );
 ```
+
+</div>
+</div>
+
+---
+
+## What about in Golang
+
+<style scoped>
+pre code {
+    font-size: 0.3rem;
+}
+</style>
+
+The **135**-lines-of-code `abs()` function definition in a vectorized database developed in **Golang**
+
+<div class="grid grid-cols-3 gap-20 items-start">
+<div>
+
+```go
+func (c *absFunctionClass) getFunction(ctx sessionctx.Context,
+        args []Expression) (builtinFunc, error) {
+	if err := c.verifyArgs(args); err != nil {
+		return nil, c.verifyArgs(args)
+	}
+
+	argFieldTp := args[0].GetType()
+	argTp := argFieldTp.EvalType()
+	if argTp != types.ETInt && argTp != types.ETDecimal {
+		argTp = types.ETReal
+	}
+	bf, err := newBaseBuiltinFuncWithTp(ctx, c.funcName, args, argTp, argTp)
+	if err != nil {
+		return nil, err
+	}
+	if mysql.HasUnsignedFlag(argFieldTp.GetFlag()) {
+		bf.tp.AddFlag(mysql.UnsignedFlag)
+	}
+	if argTp == types.ETReal {
+		flen, decimal :=
+            mysql.GetDefaultFieldLengthAndDecimal(mysql.TypeDouble)
+		bf.tp.SetFlen(flen)
+		bf.tp.SetDecimal(decimal)
+	} else {
+		bf.tp.SetFlenUnderLimit(argFieldTp.GetFlen())
+		bf.tp.SetDecimalUnderLimit(argFieldTp.GetDecimal())
+	}
+	var sig builtinFunc
+	switch argTp {
+	case types.ETInt:
+		if mysql.HasUnsignedFlag(argFieldTp.GetFlag()) {
+			sig = &builtinAbsUIntSig{bf}
+		} else {
+			sig = &builtinAbsIntSig{bf}
+		}
+	case types.ETDecimal:
+		sig = &builtinAbsDecSig{bf}
+	case types.ETReal:
+		sig = &builtinAbsRealSig{bf}
+	default:
+		panic("unexpected argTp")
+	}
+	return sig, nil
+}
+```
+
+Manually **typecheck** each function
+
+</div>
+<div>
+
+```go
+type builtinAbsRealSig struct {	baseBuiltinFunc }
+type builtinAbsIntSig struct {	baseBuiltinFunc }
+type builtinAbsUIntSig struct {	baseBuiltinFunc }
+type builtinAbsDecSig struct {	baseBuiltinFunc }
+
+func (b *builtinAbsDecSig) Clone() builtinFunc {
+	newSig := &builtinAbsDecSig{}
+	newSig.cloneFrom(&b.baseBuiltinFunc)
+	return newSig
+}
+
+func (b *builtinAbsRealSig) Clone() builtinFunc {
+	newSig := &builtinAbsRealSig{}
+	newSig.cloneFrom(&b.baseBuiltinFunc)
+	return newSig
+}
+
+func (b *builtinAbsIntSig) Clone() builtinFunc {
+	newSig := &builtinAbsIntSig{}
+	newSig.cloneFrom(&b.baseBuiltinFunc)
+	return newSig
+}
+
+func (b *builtinAbsUIntSig) Clone() builtinFunc {
+	newSig := &builtinAbsUIntSig{}
+	newSig.cloneFrom(&b.baseBuiltinFunc)
+	return newSig
+}
+```
+
+`Clone()` definition for each function signature
+
+</div>
+<div>
+
+```go
+func (b *builtinAbsDecSig) vecEvalDecimal(input *chunk.Chunk, result *chunk.Column) error {
+	if err := b.args[0].VecEvalDecimal(b.ctx, input, result); err != nil {
+		return err
+	}
+	zero := new(types.MyDecimal)
+	buf := new(types.MyDecimal)
+	d64s := result.Decimals()
+	for i := 0; i < len(d64s); i++ {
+		if result.IsNull(i) {
+			continue
+		}
+		if d64s[i].IsNegative() {
+			if err := types.DecimalSub(zero, &d64s[i], buf); err != nil {
+				return err
+			}
+			d64s[i] = *buf
+		}
+	}
+	return nil
+}
+
+func (b *builtinAbsRealSig) vecEvalReal(
+    input *chunk.Chunk,
+    result *chunk.Column
+) error {
+	if err := b.args[0].VecEvalReal(b.ctx, input, result); err != nil {
+		return err
+	}
+	f64s := result.Float64s()
+	for i := 0; i < len(f64s); i++ {
+		f64s[i] = math.Abs(f64s[i])
+	}
+	return nil
+}
+
+func (b *builtinAbsIntSig) vecEvalInt(
+    input *chunk.Chunk,
+    result *chunk.Column
+) error {
+	if err := b.args[0].VecEvalInt(b.ctx, input, result); err != nil {
+		return err
+	}
+	i64s := result.Int64s()
+	for i := 0; i < len(i64s); i++ {
+		if result.IsNull(i) {
+			continue
+		}
+		if i64s[i] == math.MinInt64 {
+			return types.ErrOverflow.GenWithStackByArgs("BIGINT",
+                fmt.Sprintf("abs(%d)", i64s[i]))
+		}
+		if i64s[i] < 0 {
+			i64s[i] = -i64s[i]
+		}
+	}
+	return nil
+}
+```
+
+Manual **loop** for evaluation
 
 </div>
 </div>

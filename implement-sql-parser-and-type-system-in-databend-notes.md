@@ -618,6 +618,14 @@ registry.register_2_arg::<Int16Type, Int16Type, Int16Type>("plus", |lhs: i16, rh
 registry.register_2_arg::<Int16Type, Int16Type, Int16Type>("minus", |lhs: i16, rhs: i16| lhs - rhs);
 ```
 
+## Golang
+
+说来也巧，之前我也参与过一个使用 golang 编写的数据库项目。一般为了避免引战，我不会在公开场合讨论 Rust 和 Golang 的优劣。但是今天是rust专场，所以我就可以说一说了。这是我从 golang 项目中摘取的定义 abs() 函数的片段，它有 135 行，定义了 5 个结构体和 5 个函数，分别是一个函数级专微型类型检查器，4个 struct 用来分别代表不同的函数从在，以及对每个类型重载分别定义一次计算过程，由于 golang 没有能够把向量化循环抽象出来的机制，那么只好在每一个重载内部都手动重写一次for循环。
+
+这里 135 行只定义了一个 abs 函数，定义其他上百个函数的时候都要把重复一遍相同过程。
+
+这样对比下来，rust 在运行效率和可维护性上都是明显更好一些。其实不是想讨论 rust 和 golang 谁更好这种问题。只是说每一种语言都有适合的场景，而在数据库领域，rust 在应对功能复杂性上比 golang 更适合一些。
+
 # Conclusion
 
 以上，在本次分享中，我向大家介绍了 Databend 中独特的 SQL 解析器和表达式框架。我们使用了诸如 Rust、nom、Logos、Pratt 算法、类型检查等工具和技术来实现一个高效的、可扩展的解析器和计算框架。这使得我们能够快速迭代 Databend，不断优化我们的数据库系统，同时保持高性能和高可扩展性。
