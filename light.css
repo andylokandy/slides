@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /*!
  * @theme light
  * @author Daniel Nicolas Gisolfi / Andy Lok
@@ -7,9 +6,11 @@
  * @size 4:3 960px 720px
  * @size 16:9 1280px 720px
  */
- 
+
+@charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Lato:400,900|IBM+Plex+Sans:300,400,700");
 
+/* Variables */
 :root {
   --light-background: #ffffff;
   --light-current-line: #e3e3e3;
@@ -19,11 +20,158 @@
   --light-green: #43833c;
   --light-orange: #f0a25c;
   --light-pink: #890f50;
-  --light-purple:#bd93f9;
+  --light-purple: #bd93f9;
   --light-red: #9c4f8a;
   --light-yellow: #f0a25c;
 }
 
+/* Base Layout */
+section {
+  font-family: "IBM Plex Sans";
+  font-size: 25px;
+  line-height: 1.35;
+  padding: 70px;
+  color: var(--light-foreground);
+  background-color: var(--light-background);
+}
+
+section>*:first-child,
+section>header:first-child+* {
+  margin-top: 0;
+}
+
+/* Headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0.5em 0 0 0;
+  color: var(--light-cyan);
+}
+
+h1 {
+  font-size: 2.4em;
+}
+
+h2 {
+  font-size: 1.6em;
+}
+
+h3 {
+  color: var(--light-foreground);
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+h4 {
+  font-size: 1.1em;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+h6 {
+  font-size: 0.9em;
+}
+
+/* Text Elements */
+p,
+blockquote {
+  margin: 0.5em 0 0 0;
+  font-size: 0.6em;
+}
+
+p {
+  font-weight: 300;
+}
+
+p strong {
+  font-weight: 700;
+}
+
+blockquote {
+  margin: 1em 0 0 0;
+  padding: 0 1em;
+  position: relative;
+  color: var(--light-orange);
+}
+
+blockquote::before,
+blockquote::after {
+  content: "";
+  display: block;
+  font-family: "Times New Roman", serif;
+  font-weight: bold;
+  position: absolute;
+  color: var(--light-green);
+}
+
+blockquote::before {
+  top: 0;
+  left: 0;
+}
+
+blockquote::after {
+  right: 0;
+  bottom: 0;
+  transform: rotate(180deg);
+}
+
+blockquote>*:first-child {
+  margin-top: 0;
+}
+
+/* Lists */
+ul {
+  list-style-type: disc;
+  font-weight: 300;
+  font-size: 22px;
+}
+
+ol {
+  padding-left: 0.7em;
+  font-size: 16px;
+}
+
+ul li,
+ol li {
+  padding-top: 0.6em;
+  margin: 0.5em 0 0 0;
+  color: var(--light-foreground);
+}
+
+/* Code Blocks */
+code {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8em;
+  letter-spacing: 0;
+  margin: -0.1em 0.15em;
+  padding: 0.1em 0.2em;
+  vertical-align: baseline;
+  background: var(--light-current-line);
+}
+
+pre {
+  display: block;
+  margin: 1em 0 0 0;
+  min-height: 1em;
+  overflow: visible;
+}
+
+pre code {
+  box-sizing: border-box;
+  margin: 0;
+  min-width: 100%;
+  padding: 0.5em;
+  font-size: 0.5em;
+  background: var(--light-background);
+}
+
+/* Syntax Highlighting */
 .hljs {
   display: block;
   overflow-x: auto;
@@ -31,60 +179,51 @@
   background: var(--light-background);
 }
 
-/* light Foreground */
 .hljs,
 .hljs-subst,
 .hljs-typing,
 .hljs-variable,
 .hljs-template-variable {
-    color: var(--light-foreground);
+  color: var(--light-foreground);
 }
 
-/* light Comment */
 .hljs-comment,
 .hljs-quote,
 .hljs-deletion {
-    color: var(--light-comment);
+  color: var(--light-comment);
 }
 
-/* light Cyan */
 .hljs-meta .hljs-doctag,
 .hljs-built_in,
 .hljs-selector-tag,
 .hljs-section,
 .hljs-link,
 .hljs-class {
-    color: var(--light-cyan);
+  color: var(--light-cyan);
 }
 
 
-/* light Green */
 .hljs-title {
-    color: var(--light-pink);
+  color: var(--light-pink);
 }
 
-/* light Orange */
 .hljs-params {
-    color: var(--light-orange);
+  color: var(--light-orange);
 }
 
-/* light Pink */
 .hljs-keyword {
-    color: var(--light-pink);
+  color: var(--light-pink);
 }
 
-/* light Purple */
 .hljs-literal,
 .hljs-number {
-    color: var(--light-green);
+  color: var(--light-green);
 }
 
-/* light Red */
 .hljs-regexp {
-    color: var(--light-red);
+  color: var(--light-red);
 }
 
-/* light Yellow */
 .hljs-string,
 .hljs-name,
 .hljs-type,
@@ -93,7 +232,7 @@
 .hljs-bullet,
 .hljs-addition,
 .hljs-template-tag {
-    color: var(--light-yellow);
+  color: var(--light-yellow);
 }
 
 .hljs-keyword,
@@ -110,194 +249,37 @@
 
 .hljs-params,
 .hljs-emphasis {
- font-style: italic;
+  font-style: italic;
 }
 
-svg[data-marp-fitting=svg] {
-  max-height: 580px;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0.5em 0 0 0;
-  color: var(--light-cyan);
-}
-h1 strong,
-h2 strong,
-h3 strong,
-h4 strong,
-h5 strong,
-h6 strong {
-  font-weight: inherit;
-}
-
-h1 {
-  font-size: 2.8em;
-}
-
-h2 {
-  font-size: 1.5em;
-}
-
-h3 {
-  font-size: 1.3em;
-}
-
-h4 {
-  font-size: 1.1em;
-}
-
-h5 {
-  font-size: 1em;
-}
-
-h6 {
-  font-size: 0.9em;
-}
-
-p,
-blockquote {
-  margin: 1em 0 0 0;
-}
-
-ul > li,
-ol > li {
-  margin: 0.5em 0 0 0;
-  color:  var(--light-foreground);
-  font-size: 0.9em;
-}
-ul > li > p,
-ol > li > p {
-  margin: 0.6em 0 0 0;
-}
-
-code {
-  display: inline-block;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.8em;
-  letter-spacing: 0;
-  margin: -0.1em 0.15em;
-  padding: 0.1em 0.2em;
-  vertical-align: baseline;
-  color: var(--light-green);
-}
-
-pre {
-  display: block;
-  margin: 1em 0 0 0;
-  min-height: 1em;
-  overflow: visible;
-}
-pre code {
-  box-sizing: border-box;
-  margin: 0;
-  min-width: 100%;
-  padding: 0.5em;
-  font-size: 0.5em;
-}
-pre code svg[data-marp-fitting=svg] {
-  max-height: calc(580px - 1em);
-}
-
-blockquote {
-  margin: 1em 0 0 0;
-  padding: 0 1em;
-  position: relative;
-  color: var(--light-orange);
-}
-blockquote::after, blockquote::before {
-  content: "“";
-  display: block;
-  font-family: "Times New Roman", serif;
-  font-weight: bold;
-  position: absolute;
-  color: var(--light-green);
-}
-blockquote::before {
-  top: 0;
-  left: 0;
-}
-blockquote::after {
-  right: 0;
-  bottom: 0;
-  transform: rotate(180deg);
-}
-blockquote > *:first-child {
-  margin-top: 0;
-}
-
-mark {
-  background: transparent;
-}
-
+/* Tables */
 table {
   border-spacing: 0;
   border-collapse: collapse;
   margin: 1em 0 0 0;
 }
+
 table th,
 table td {
-  padding: 0.2em 0.4em;
+  padding: 0.3em 1.2em;
   border-width: 1px;
   border-style: solid;
+  border-color: var(--light-foreground);
+  font-size: 0.6em;
+  font-weight: 300;
 }
 
-section {
-  font-size: 25px;
-  font-family: "IBM Plex Sans";
-  /* font-family: system-ui; */
-  line-height: 1.35;
-  padding: 70px;
-  color: var(--light-foreground);
-  background-color: var(--light-background);
-}
-section > *:first-child,
-section > header:first-child + * {
-  margin-top: 0;
-}
-section a,
-section mark {
-  color: var(--light-red);
-}
-section code {
-  background: var(--light-current-line);
-  color: var(--light-current-green);
-}
-section h1 strong,
-section h2 strong,
-section h3 strong,
-section h4 strong,
-section h5 strong,
-section h6 strong {
-  color: var(--light-background);
-}
-section pre > code {
-  background: var(--light-background);
-}
-section header,
-section footer,
-section section::after,
-section blockquote::before,
-section blockquote::after {
-  color: var(--light-comment);
-}
-section table th,
-section table td {
-  border-color:  var(--light-foreground);
-}
-section table thead th {
+table thead th {
   background: var(--light-background);
   color: var(--light-red);
 }
-section table tbody > tr:nth-child(even) td,
-section table tbody > tr:nth-child(even) th {
+
+table tbody>tr:nth-child(even) td,
+table tbody>tr:nth-child(even) th {
   background: var(--light-background);
 }
 
+/* Header, Footer and Section */
 header,
 footer,
 section::after {
@@ -329,72 +311,29 @@ section::after {
   font-size: 80%;
 }
 
-hr {
-  margin-top: 30px;
-}
-
-p {
-  font-size: 0.8em;
-}
-
+/* Grid and Layout */
 div.grid {
   align-items: center;
-  height: 550px;
+  gap: 20px;
+  height: 100%;
 }
 
 div.grid.items-start {
   align-items: flex-start;
 }
 
-h1 {
-  font-size: 2.4em;
+/* SVG Styles */
+svg[data-marp-fitting=svg] {
+  max-height: 580px;
 }
 
-h2 {
-  font-size: 1.6em;
+pre code svg[data-marp-fitting=svg] {
+  max-height: calc(580px - 1em);
 }
 
-h3 {
-  color: var(--light-foreground);
-  font-size: 1em;
-  font-weight: 400;
-}
-
-h3 strong {
-  color: var(--light-foreground);
-  font-weight: 700;
-}
-
-p, ol li {
-  font-size: 0.6em;
-  font-weight: 300;
-}
-
-ol {
-  padding-left: 0.7em;
-}
-
-ul {
-  list-style-type: none;
-  font-weight: 300;
-  font-size: 0.9em;
-}
-
-ul li {
-  padding-bottom: 0.6em;
-}
-
-table th, table td {
-  font-size: 0.6em;
-  padding: 0.3em 1.2em 0.3em 1.2em;
-  font-weight: 300;
-}
-
-p strong {
-  font-weight: 700;
-}
-
-g.node, g.label, g.cluster-label {
+g.node,
+g.label,
+g.cluster-label {
   stroke: none;
   border: none;
   font-family: 'IBM Plex Sans';
@@ -412,4 +351,18 @@ g.notice rect {
 
 g.notice span {
   color: #fff;
+}
+
+/* Misc */
+mark {
+  background: transparent;
+}
+
+section a,
+section mark {
+  color: var(--light-red);
+}
+
+hr {
+  margin-top: 30px;
 }
